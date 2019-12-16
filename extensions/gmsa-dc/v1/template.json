@@ -2,28 +2,28 @@
 	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		 "artifactsLocation": {
-			 "type": "string",
-			 "minLength": 1,
-			 "metadata": {
-				 "description": "Artifacts Location - URL"
-			 }
-		 },
-		 "apiVersionDeployments": {
-			 "type": "string",
-			 "minLength": 1,
-			 "metadata": {
-				 "description": "Deployments API Version"
-			 }
-		 },
-		 "targetVMName":{
-			 "type": "string",
-			 "minLength": 1,
-			 "metadata": {
-				 "description": "Name of the vm to run the extension on"
-			 }
-		 },
-		 "targetVMType":{
+		"artifactsLocation": {
+			"type": "string",
+			"minLength": 1,
+			"metadata": {
+				"description": "Artifacts Location - URL"
+			}
+		},
+		"apiVersionDeployments": {
+			"type": "string",
+			"minLength": 1,
+			"metadata": {
+				"description": "Deployments API Version"
+			}
+		},
+		"targetVMName": {
+			"type": "string",
+			"minLength": 1,
+			"metadata": {
+				"description": "Name of the vm to run the extension on"
+			}
+		},
+		"targetVMType": {
 			"type": "string",
 			"minLength": 1,
 			"metadata": {
@@ -38,37 +38,37 @@
 			}
 		},
 		"vmIndex": {
-			 "type": "int",
-			 "metadata": {
-				 "description": "index in the pool of the current agent, used so that we can get the extension name right"
-			 }
-		 }
+			"type": "int",
+			"metadata": {
+				"description": "index in the pool of the current agent, used so that we can get the extension name right"
+			}
+		}
 	},
-	"variables": { 
-        "initScriptUrl": "https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/extensions/gmsa-dc/v1/Promote-DC.ps1"
+	"variables": {
+		"initScriptUrl": "https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/extensions/gmsa-dc/v1/Promote-DC.ps1"
 	},
 	"resources": [
-	    {
-            "apiVersion": "[parameters('apiVersionDeployments')]",
-            "dependsOn": [],
-            "location": "[resourceGroup().location]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('targetVMName'),'/cse', '-', parameters('targetVMType'), '-', parameters('vmIndex'))]", 
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "[variables('initScriptUrl')]"
-                    ]
-                },
-                "protectedSettings": {
-                "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted ./Promote-DC.ps1')]"
-                }
-            }
-        }
+		{
+			"apiVersion": "[parameters('apiVersionDeployments')]",
+			"dependsOn": [],
+			"location": "[resourceGroup().location]",
+			"type": "Microsoft.Compute/virtualMachines/extensions",
+			"name": "[concat(parameters('targetVMName'),'/gmsa-dc', '-', parameters('targetVMType'), '-', parameters('vmIndex'))]",
+			"properties": {
+				"publisher": "Microsoft.Compute",
+				"type": "CustomScriptExtension",
+				"typeHandlerVersion": "1.8",
+				"autoUpgradeMinorVersion": true,
+				"settings": {
+					"fileUris": [
+						"[variables('initScriptUrl')]"
+					]
+				},
+				"protectedSettings": {
+					"commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted ./Promote-DC.ps1')]"
+				}
+			}
+		}
 	],
-	"outputs": {  }
- }
+	"outputs": {}
+}
