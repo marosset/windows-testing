@@ -58,7 +58,7 @@ spec:
             azure-container-registry-config: c:/k/azure.json
             cloud-config: c:/k/azure.json
             cloud-provider: azure
-            feature-gates: ${NODE_FEATURE_GATES:-"HPAContainerMetrics=true"}
+            feature-gates: CSIMigrationAzureDisk=false
             v: "2"
             windows-priorityclass: ABOVE_NORMAL_PRIORITY_CLASS
           name: '{{ ds.meta_data["local_hostname"] }}'
@@ -147,7 +147,7 @@ spec:
           cloud-config: /etc/kubernetes/azure.json
           cloud-provider: azure
           cluster-name: ${CLUSTER_NAME}
-          feature-gates: HPAContainerMetrics=true
+          feature-gates: HPAContainerMetrics=true,CSIMigrationAzureDisk=false
           v: "4"
         extraVolumes:
         - hostPath: /etc/kubernetes/azure.json

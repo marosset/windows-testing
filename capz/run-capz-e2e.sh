@@ -151,7 +151,7 @@ apply_workload_configuraiton(){
 
     # apply additional helper manifests (logger etc)
     kubectl apply -f "${CAPZ_DIR}"/templates/addons/windows/containerd-logging/containerd-logger.yaml
-    kubectl apply -f "${CAPZ_DIR}"/templates/addons/windows/csi-proxy/csi-proxy.yaml
+    #kubectl apply -f "${CAPZ_DIR}"/templates/addons/windows/csi-proxy/csi-proxy.yaml
     kubectl apply -f "${CAPZ_DIR}"/templates/addons/metrics-server/metrics-server.yaml
 }
 
