@@ -138,6 +138,8 @@ spec:
       - powershell C:/create-temp-folder.ps1
       - powershell C:/replace-containerd.ps1
       - powershell C:/collect-hns-crashes.ps1
+      - powershell -Command "Add-Content -Path 'C:\\Windows\\System32\\drivers\\etc\\hosts'
+        -Value '10.0.0.100   ${CLUSTER_NAME}-${APISERVER_LB_DNS_SUFFIX}.${AZURE_LOCATION}.cloudapp.azure.com'"
       - powershell C:/replace-ci-binaries.ps1
       - powershell C:/ssh-setup.ps1
       users:
@@ -340,6 +342,8 @@ spec:
     postKubeadmCommands:
     - bash -c /tmp/node-log-query-kubelet-config.sh
     preKubeadmCommands:
+    - echo '10.0.0.100  ${CLUSTER_NAME}-${APISERVER_LB_DNS_SUFFIX}.${AZURE_LOCATION}.cloudapp.azure.com'
+      >> /etc/hosts
     - bash -c /tmp/kubeadm-bootstrap.sh
     useExperimentalRetryJoin: true
   machineTemplate:
@@ -366,6 +370,12 @@ spec:
     name: cluster-identity
   location: ${AZURE_LOCATION}
   networkSpec:
+    apiServerLB:
+      frontendIPs:
+      - name: ${CLUSTER_NAME}-api-lb
+        publicIP:
+          dnsName: ${CLUSTER_NAME}-${APISERVER_LB_DNS_SUFFIX}.${AZURE_LOCATION}.cloudapp.azure.com
+          name: ${CLUSTER_NAME}-api-lb
     subnets:
     - name: control-plane-subnet
       role: control-plane
