@@ -7,6 +7,7 @@ set -o functrace
 
 SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
 SCRIPT_ROOT=$(dirname "${SCRIPT_PATH}")
+SCRIPT_ARGS=("$@")
 export CAPZ_DIR="${CAPZ_DIR:-"${GOPATH}/src/sigs.k8s.io/cluster-api-provider-azure"}"
 : "${CAPZ_DIR:?Environment variable empty or not defined.}"
 if [[ ! -d $CAPZ_DIR ]]; then
@@ -60,6 +61,7 @@ main() {
     apply_cloud_provider_azure
     wait_for_nodes
     if [[ "${HYPERV}" == "true" ]]; then apply_hyperv_configuration; fi
+    echo "before run_e2e_test"
     run_e2e_test
 }
 
@@ -368,7 +370,15 @@ apply_hyperv_configuration(){
 
 run_e2e_test() {
     export SKIP_TEST="${SKIP_TEST:-"false"}"
-    if [[ ! "$SKIP_TEST" == "true" ]]; then
+
+    if [[ "${#SCRIPT_ARGS[@]}" -gt 0 ]]; then
+        #disable error exit so we can run post-command cleanup
+        set +o errexit
+        echo "running custom command: ${SCRIPT_ARGS[@]}"
+        "${SCRIPT_ARGS[@]}"
+        EXIT_VALUE="${?}"
+        exit ${EXIT_VALUE}
+    elif [[ ! "$SKIP_TEST" == "true" ]]; then
         ## get test binaries (e2e.test and ginkgo)
         ## https://github.com/kubernetes/sig-release/blob/master/release-engineering/artifacts.md#content-of-kubernetes-test-system-archtargz-on-example-of-kubernetes-test-linux-amd64targz-directories-removed-from-list
         curl -L -o /tmp/kubernetes-test-linux-amd64.tar.gz https://storage.googleapis.com/k8s-release-dev/ci/"${CI_VERSION}"/kubernetes-test-linux-amd64.tar.gz
